@@ -34,7 +34,7 @@ router.use(resolveSchool);
 
 // Admin-only routes
 router.post('/', requireAdminAuth, auditContext, validateRegisterStudent, registerStudent);
-router.post('/bulk', requireAdminAuth, auditContext, bulkImportLimiter, express.json({ limit: '1mb' }), streamingCsvUpload({ requiredHeaders: ['studentId', 'name', 'class'] }), bulkImportStudents);
+router.post('/bulk', requireAdminAuth, auditContext, bulkImportLimiter, streamingCsvUpload({ requiredHeaders: ['studentId', 'name', 'class'] }), bulkImportStudents);
 router.get('/', requireAdminAuth, validatePagination, getAllStudents);
 router.get('/export', requireAdminAuth, exportStudents);
 

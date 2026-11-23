@@ -71,7 +71,7 @@ const { requestLogger } = require('./middleware/requestLogger');
 const { correlationIdMiddleware } = require('./middleware/correlationId');
 const { createConcurrentRequestMiddleware } = require('./middleware/concurrentRequestHandler');
 const { requireAdminAuth } = require('./middleware/auth');
-const { jsonDepthGuard, deduplicateQueryParams } = require('./middleware/sanitizeRequest');
+const { jsonDepthGuard, sanitizeBody, deduplicateQueryParams } = require('./middleware/sanitizeRequest');
 const { runConsistencyCheck } = require('./controllers/consistencyController');
 const { healthCheck, healthLive, healthReady } = require('./controllers/healthController');
 const { setupEnforceConsoleErrorLogging } = require('./errorHandling');
@@ -137,6 +137,7 @@ app.use(express.json({
     req.rawBody = buf.toString('utf8');
   },
 }));
+app.use(express.urlencoded({ limit: config.MAX_BODY_SIZE, extended: false }));
 // Correlation ID must be resolved before requestLogger so the logger uses the
 // same ID that will be reflected in the response header.
 app.use(correlationIdMiddleware);
@@ -161,6 +162,7 @@ app.use((req, res, next) => {
 
 // ── JSON depth / array-bomb guard + query-param de-pollution ──────────────────
 app.use(jsonDepthGuard);
+app.use(sanitizeBody);
 app.use(deduplicateQueryParams);
 
 const concurrentMiddleware = createConcurrentRequestMiddleware({
