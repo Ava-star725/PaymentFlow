@@ -120,6 +120,7 @@ app.use(cors({
   credentials: true,
   maxAge: 86400,
 }));
+app.options('*', (_req, res) => res.sendStatus(204));
 app.use(cookieParser());
 // The backend serves only JSON API responses — no HTML, scripts, or styles.
 // CSP directives for HTML content (scriptSrc, styleSrc, imgSrc, etc.) are
